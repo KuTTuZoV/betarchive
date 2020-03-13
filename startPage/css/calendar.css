@@ -1,0 +1,42 @@
+div.circle {
+	background: #CCC;
+	width: 30;
+	height: 30;
+	border-radius: 50%;
+	text-align: center;
+	vertical-align: middle;
+}
+
+div.circle:hover {
+	background: #786b59; /* Цвет фона под ссылкой */
+	color: #ffe; /* Цвет ссылки */
+	cursor: default;
+}
+
+td.header
+{
+	text-align: center;
+	border-radius: 10px;
+	padding: 1px;
+}
+
+td.calendarCell
+{
+	padding: 1px,1px;
+	border-radius: 5px;
+}
+
+table
+{
+	width: 17%;
+}
+
+tr.header
+{
+	border: solid;
+}
+
+tr.calendarRow
+{
+	vertical-align: top;
+}

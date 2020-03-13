@@ -1,0 +1,554 @@
+<head>
+	<!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="http://91.239.26.202/css/materialize.min.css"  media="screen,projection"/>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<script src="http://91.239.26.202/js/plotly-latest.min.js"></script>
+	<meta charset='utf-8'/>
+	<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+	<title>BetArchive</title>
+	
+	<style>
+		div.circle {
+			background: #CCC;
+			width: 30;
+			height: 30;
+			border-radius: 50%;
+			text-align: center;
+			vertical-align: middle;
+			
+		}
+		
+		div.circle:hover {
+			background: #786b59; /* Цвет фона под ссылкой */ 
+			color: #ffe; /* Цвет ссылки */ 
+			cursor: default;
+		} 
+		
+		#month
+		{
+			background: #FFF;
+			vertical-align: top;
+		}
+		
+		td
+		{
+			border-left: 2px;
+			vertical-align: top;
+			text-align: center;
+		}
+		
+		td.team
+		{
+			text-align: center;
+			font-size: 18px;
+			font-weight: bold;
+		}
+		
+		table
+		{
+			vertical-align: top;
+		}
+		
+		tr.dateRow
+		{
+			background: #ff9800;
+			color: #fff
+		}
+		
+
+		.demo-card-wide > .mdl-card__title {
+		  color: #fff;
+		  height: 300px;
+		}
+		
+		.slidecontainer {
+		  width: 100%; /* Width of the outside container */
+		}
+
+		/* The slider itself */
+		.slider {
+		  -webkit-appearance: none;  /* Override default CSS styles */
+		  appearance: none;
+		  width: 100%; /* Full-width */
+		  height: 25px; /* Specified height */
+		  background: #d3d3d3; /* Grey background */
+		  outline: none; /* Remove outline */
+		  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+		  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+		  transition: opacity .2s;
+		}
+
+		/* Mouse-over effects */
+		.slider:hover {
+		  opacity: 1; /* Fully shown on mouse-over */
+		}
+
+		/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */ 
+		.slider::-webkit-slider-thumb {
+		  -webkit-appearance: none; /* Override default look */
+		  appearance: none;
+		  width: 25px; /* Set a specific slider handle width */
+		  height: 25px; /* Slider handle height */
+		  background: #4CAF50; /* Green background */
+		  cursor: pointer; /* Cursor on hover */
+		}
+
+		.slider::-moz-range-thumb {
+		  width: 25px; /* Set a specific slider handle width */
+		  height: 25px; /* Slider handle height */
+		  background: #4CAF50; /* Green background */
+		  cursor: pointer; /* Cursor on hover */
+		}
+		
+		.orange{
+			background: #ff8f00;
+		}
+		
+		.dayTitle
+		{
+			background: #e65100;
+		}
+		
+		td.calendarCell
+		{
+			padding: 1px 1px;
+			align: center;
+		}
+
+		div.arrow-right
+		{
+			width:50;
+			border: 60px solid transparent;
+			border-right-color: #ff9800;
+			border-left: 0;
+			float: right;
+		}
+		div.arrow-right:hover
+		{
+			border-right-color: #ffB000;
+		}
+		
+		div.arrow-left
+		{
+			width:50;
+			border: 60px solid transparent;
+			border-left-color: #ff9800;
+			border-right: 0;
+			float: left;
+		}
+		
+		div.arrow-left:hover
+		{
+			border-left-color: #ffB000;
+		}
+	</style>
+
+</head>
+
+<body>
+	<!-- Yandex.Metrika counter -->
+	<script type="text/javascript" >
+	   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+	   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+	   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+	   ym(52720516, "init", {
+			clickmap:true,
+			trackLinks:true,
+			accurateTrackBounce:true
+	   });
+	</script>
+	<noscript><div><img src="https://mc.yandex.ru/watch/52720516" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+	<!-- /Yandex.Metrika counter -->
+			
+	<nav>
+		<div class="nav-wrapper">
+			<div class="input-field orange">
+			  <input id="myInput" type="search">
+			  <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+			  <i class="material-icons">close</i>
+			</div>
+		</div>
+	</nav>
+	
+	<div class="input-field col s12">
+		<select multiple id='countries'>
+		  <option value="" disabled selected>Страна</option>
+		</select>
+	</div>
+	
+	<div class="input-field col s12">
+		<select multiple id='eventsDD'>
+		  <option value="" disabled selected>Чемпионат</option>
+		</select>
+	</div>
+
+	<ul class="pagination" align='center'>
+		
+	</ul>
+	
+	<table>
+		<tr>
+			<td>
+				
+			</td>
+			<td>
+				<table id='events'>
+				</table>
+			</td>
+		</tr>
+	</table>
+	
+	<div id="tester"></div>
+	<footer>
+		Архив коэффициентов футбольных событий
+	</footer>
+	
+	<script type="text/javascript" src="js/materialize.min.js"></script>
+	<script src="js/calendar.js"></script>
+	<script src="js/filter.js"></script>
+	
+
+	<script>
+				
+		monthsName = ['Январь', 'Февраль','Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'] 
+		daysCount  = [31,28,31,30,31,30,31,31,30,31,30,31]
+		var slider = document.getElementById("myRange");
+		
+		allEvents = []
+		pictures = []
+		
+		pagination = document.getElementsByClassName('pagination')[0]
+		
+		pageCapacity = innerWidth / 60;
+		
+		getEvents()
+		
+		//countries = Array.from(new Set(allEvents[0].map(x => x.tourID.split('.')[1])))
+		ligues = []
+		tournaments = []
+		
+		countriesDD = document.getElementById('countries')
+				
+		//fillCountriesList(countries)
+		
+		//setInterval(updateTournaments, 1000)
+		//setInterval(updateEvents, 1000)
+		
+		showEvents(allEvents[0],1)
+		
+		createPagination()
+		currentTimestamp = 0
+		
+		document.getElementById("myInput").addEventListener("search", myFunction);
+		
+		document.addEventListener('DOMContentLoaded', refreshSelect)
+		
+		M.AutoInit();
+		 
+		var instance = M.Carousel.init({
+			 fullWidth: false,
+			 indicators: true
+		 });
+		
+		document.addEventListener('DOMContentLoaded', function() {
+			var elems = document.querySelectorAll('.carousel');
+			var instances = M.Carousel.init(elems, '');
+		  });
+		
+		
+		function countryChanged()
+		{
+			a = 5
+		}
+		
+		function myFunction()
+		{
+			searchEvents = allEvents[0].filter(x => (x['team1'].indexOf(event.target.value) > -1) || (x['team2'].indexOf(event.target.value) > -1))
+			showEvents(searchEvents,1)
+		}
+				
+		function nextPage()
+		{
+			number = parseInt(event.target.innerText)
+			
+			for(i = 0; i < pageCapacity;i++)
+			if (i == (number-1)) pagination.children[i].className = 'active'
+			else pagination.children[i].className = 'waves-effect'
+			
+			showEvents(allEvents[0],number)
+		}		
+				
+		function getLogo(team)
+		{
+			words = team.split(' ')
+			
+			if(words.length > 1)
+			team = words[0] + ' ' + words[1]
+			else 
+			team = words[0]
+		
+			if(pictures.filter(x => x[0] == team).length > 0)
+			return 'http://origin.bkfon-resource.ru/' + pictures.filter(x => x[0] == "Стелленбош")[0][1]
+			else
+			return 'https://i.ibb.co/gmYVQNF/NoLogo.png'
+		}
+		
+		function getTimstampsSet(events)
+		{
+			timestamps = new Set();
+			
+			for(i = 0; i < events.length;i++)
+				timestamps.add(events[i].timestamp)
+				
+			return timestamps
+		}
+		
+		function showEvents(filteredEvents, page)
+		{
+			eventTable = document.getElementById('events')
+			eventTable.innerHTML = ""
+			eventCounter = 0
+			
+			rowCapacity = parseInt(innerWidth / 350)
+			
+			
+			filteredEvents = filteredEvents.slice((page-1)*50, page*50)
+			
+			timestamps = getTimstampsSet(filteredEvents)
+			
+			timestamps.forEach((value, valueAgain, set) => {
+				var currentDate = new Date(value*1000)
+				
+				tr = document.createElement('tr')
+				td = document.createElement('td')
+				
+				td.setAttribute('colspan','5')
+				tr.className = 'dateRow'
+				td.innerText = currentDate
+				
+				tr.append(td)
+				eventTable.append(tr)
+				
+				events = filteredEvents.filter(x => x.timestamp == value)
+				
+				tr  = document.createElement('tr')
+				eventCounter = 0
+				for (i = 0; i < events.length;i++)
+				{
+					td  = document.createElement('td')
+					td.style.width = '20%'
+					
+					if(events[i]['team1pic'] == '')team1pic = 'https://i.ibb.co/gmYVQNF/NoLogo.png'
+					else team1pic = 'http://origin.bkfon-resource.ru/' + events[i]['team1pic']
+					
+					if(events[i]['team2pic'] == '')team2pic = 'https://i.ibb.co/gmYVQNF/NoLogo.png'
+					else team2pic = 'http://origin.bkfon-resource.ru/' + events[i]['team2pic']
+					
+					td.append(createEventCard('', events[i]['team1'], events[i]['team2'],team1pic, team2pic, events[i]["id"].toString() + '_' + events[i]["timestamp"]))
+					
+					tr.append(td)
+					
+					eventCounter = eventCounter + 1
+					
+					if(eventCounter >= rowCapacity)
+					{
+						eventTable.append(tr)
+						eventCounter = 0
+						tr  = document.createElement('tr')
+					}
+				}
+				
+				eventTable.append(tr)
+			});
+		}
+		
+		function dayClick()
+		{
+			timestamp = event.target.getAttribute('timestamp')
+			currentTimestamp = parseInt(timestamp)
+			filteredEvents = events[1].filter(event => (event.timestamp > parseInt(timestamp)) && (event.timestamp < (parseInt(timestamp) + 24*3600)))
+			
+			showEvents(filteredEvents)
+		}
+		
+		
+		
+		function compareTimestamp(a,b) 
+		{ 
+			return a['timestamp'] - b['timestamp']; 
+		}
+	
+		function createEventCard(cardTitle, team1Name, team2Name, team1ImgPath, team2ImgPath, timestamp)
+		{			
+			mainDiv = document.createElement('div')
+			mainDiv.className = "card"
+			
+			cardTitleDiv = document.createElement('div')
+			cardTitleDiv.className = "card-content white-text"
+			
+			cardTitleText = document.createElement('h2')
+			cardTitleText.innerText = cardTitle
+			
+			cardTitleDiv.append(cardTitleText)
+			
+			<!-- --> mainDiv.append(cardTitleDiv)
+			
+			cardTable = document.createElement('table')
+			
+			imageRow = document.createElement('tr')
+			
+			team1Cell = document.createElement('td')
+			team1Img = document.createElement('img')
+			team1Img.src = team1ImgPath
+			team1Img.width = 150
+			team1Img.height = 150
+			team1Cell.align = 'center'
+			team1Cell.append(team1Img)
+			
+			team2Cell = document.createElement('td')
+			team2Img = document.createElement('img')
+			team2Img.src = team2ImgPath
+			team2Img.width = 150
+			team2Img.height = 150
+			team2Cell.align = 'center'
+			team2Cell.append(team2Img)
+			
+			imageRow.append(team1Cell)
+			imageRow.append(team2Cell)
+			
+			teamNameRow = document.createElement('tr')
+			
+			team1NameCell = document.createElement('td')
+			team1NameCell.innerText = team1Name
+			team1NameCell.className = 'team'
+			
+			team2NameCell = document.createElement('td')
+			team2NameCell.innerText = team2Name
+			team2NameCell.className = 'team'
+			
+			teamNameRow.append(team1NameCell)
+			teamNameRow.append(team2NameCell)
+			
+			buttonRow = document.createElement('tr')
+			buttonCell = document.createElement('td')
+			buttonCell.colSpan = 2
+			
+			
+			button = document.createElement('button')
+			button.className = "waves-effect orange btn"
+			button.innerText = 'Перейти'
+			button.style.width = '100%'
+			button.setAttribute('id', 'btn' + '_' + timestamp)
+			button.setAttribute('onclick','createNewPage()')
+			
+			buttonCell.append(button)
+			buttonRow.append(buttonCell)
+			
+			cardTable.append(imageRow)
+			cardTable.append(teamNameRow)
+			cardTable.append(buttonRow)
+			
+			mainDiv.append(cardTable)
+			
+			return mainDiv
+		}
+		function createNewPage()
+		{
+			url = '/dbrequests/getEventPage?id=' + event.target.id.split('_')[1] + '&timestamp=' + event.target.id.split('_')[2]
+			window.open('http://localhost:8080' + url)
+		}
+	
+		function getStatistic()
+		{
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', 'http://localhost:8080/dbrequests/getEvent?id=13549664&timecode=1582380000', false);
+			xhr.send();
+			result = xhr.responseText
+			statistic = JSON.parse(result)[1]
+		}
+	
+		function createPagination()
+		{
+			pagination = document.getElementsByClassName('pagination')[0]
+			
+			pageCount = allEvents[0].length / 50;
+			
+			if(pageCount < pageCapacity) pageCapacity = pageCount;
+			
+			
+			for(i = 0; i < pageCapacity;i++)
+			{
+				pageCell = document.createElement('li')
+				pageCell.className = "waves-effect"
+				pageCell.setAttribute('onclick','nextPage()')
+				
+				pageButton = document.createElement('a')
+				pageButton.innerText = i + 1
+				
+				pageCell.append(pageButton)
+				pagination.append(pageCell)
+			}
+		}
+	
+		function getEvents()
+		{
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', 'http://127.0.0.1:8080/dbrequests/events?timestamp=0', false);
+			xhr.send();
+			result = xhr.responseText
+			allEvents = JSON.parse(result)
+			allEvents.sort(compareTimestamp)
+			//pictures = events[3]
+			
+			eventTable = document.getElementById('events')
+			
+			var currentDate = new Date(0)
+			
+			tr = document.createElement('tr')
+			p = document.createElement('p')
+			p.innerHTML = "<h3>" + "01.01.2020" + "</h3>"
+			tr.append(p)
+			
+			for (i = 0; i < allEvents[0].length;i++)
+			{
+				//var date = new Date(events[i]['timestamp']*1000);
+
+				//if(date.getTime() != currentDate.getTime())
+				//{
+					
+				eventTable.append(p)
+				//currentDate = date
+				//}
+				
+				tr = document.createElement('tr')
+				p = document.createElement('p')
+				p.innerText = allEvents[0][i]['team1'] + " - " + allEvents[0][i]['team2']
+				//tr.append(p)
+				
+				image1 = document.createElement('image')
+				image1.setAttribute('src', "https://origin.bkfon-resources.com" + allEvents[0][i]['team1pic'])
+				image1.setAttribute('width', 200)
+				image1.setAttribute('height', 200)
+				
+				//tr.append(image1)
+				
+				image2 = document.createElement('image')
+				image2.setAttribute('src', "https://origin.bkfon-resources.com" + allEvents[0][i]['team2pic'])
+				image2.setAttribute('width', 200)
+				image2.setAttribute('height', 200)
+
+				//tr.append(image2)
+
+				
+				eventTable.append(p)
+				//eventTable.append(image1)
+				//eventTable.append(image2)
+			}
+		}		
+	</script>
+</body>

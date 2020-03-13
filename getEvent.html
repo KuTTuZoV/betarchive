@@ -1,0 +1,231 @@
+﻿<head>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+	<meta charset="utf-8">
+</head>
+
+<body>
+	<div class="dropdown">
+	  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		Факторы
+	  </button>
+	  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id='dropdown'>
+	  </div>
+	</div>
+
+	<div id="statisticPlot0"></div>
+	<div id="statisticPlot1"></div>
+	<div id="statisticPlot2"></div>
+	<div id="statisticPlot3"></div>
+	<div id="statisticPlot4"></div>
+	<div id="statisticPlot5"></div>
+	<div id="statisticPlot6"></div>
+	<div id="statisticPlot7"></div>
+
+
+	<div id="polynomPlot"></div>
+
+	<script>
+		evenstCode = {
+        921: 'Победа К1',
+        3150: 'Победа К1',
+        3144: 'Победа К1',
+				922:  'Ничья',
+				3151: 'Ничья',
+        3152: 'Ничья',
+        923: 'Победа К2',
+        3151: 'Победа К2',
+        3145: 'Победа К2',
+        924: '1X',
+        1571: '12',
+        925: '2X',
+        927: 'Фора 1',
+        937: 'Фора 1',
+        1845: 'Фора 1',
+        928: 'Фора 2',
+        938: 'Фора 2',
+        1846: 'Фора 2',
+        930: 'Тотал Б',
+        940: 'Тотал Б',
+        1848: 'Тотал Б',
+        931: 'Тотал М',
+        941: 'Тотал М',
+        1849: 'Тотал М',
+        2820: 'nextRound1',
+        2821: 'nextRound2',
+        933: 'nextRound1',
+        934: 'nextRound2'
+		}
+
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', 'http://91.239.26.202:8080/dbrequests/getEventFactors?id=%id%&timestamp=%timecode%', false);
+		xhr.send();
+		result = xhr.responseText
+		factors = JSON.parse(result)
+		createFactorsTable(factors)
+
+
+
+		function getPlot()
+		{
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', 'http://91.239.26.202:8080/dbrequests/getEvent?id=%id%&timecode=%timecode%&factorID=' + event.target.getAttribute('factorID') + '&p=' + event.target.getAttribute('p'), false);
+			xhr.send();
+			result = xhr.responseText
+			statistic = JSON.parse(result)
+
+			for(k = 0; k < 8;k++) {
+				plot = document.getElementById('statisticPlot' + k)
+				Plotly.purge(plot)
+			}
+
+			//plotPoly = document.getElementById('polynomPlot')
+			//Plotly.purge(plot)
+
+			coefs = statistic[1].map((x) => { if(x['v'] != 0) {return x['v']} else return 0})
+
+			points = []
+
+			p = Array.from(new Set(statistic[1].map((x) => { if(x['p'] != 0) {return x['p']} else return 0})))
+
+        for(pCounter = 0; pCounter < p.length; pCounter++)
+        {
+					plot = document.getElementById('statisticPlot'+pCounter)
+					Plotly.purge(plot)
+
+					pointsValues = statistic[1].filter((x) => { if(x['p'] == p[pCounter]) {return x['p']}}).map((x) => {if(x['p'] != 0) {return x['v']}})
+
+					//for(x = 0; x < pointsValues.length;x++)
+					//{
+					//	point = 0
+
+					//	point = point + Math.pow(x,i) * statistic[0][statistic[0].length - i - 1]
+
+					//	points[x] = point
+					//}
+
+					var trace1 = {
+				  		y: pointsValues,
+				  		name: '',
+				  		type: 'scatter'
+					};
+
+					var trace2 = {
+				  		y: points,
+				  		name: '',
+				  		type: 'scatter'
+					};
+
+					var data = [trace1];
+					var data2 = [trace2];
+
+					appendText = ''
+
+					if(p[pCounter] != -1) appendText = p[pCounter] / 100.0
+
+					var layout = {
+					  title: {
+						text: event.target.innerText + ' ' + appendText,
+						font: {
+					  		family: 'Courier New, monospace',
+					  		size: 24
+						},
+						xref: 'paper',
+						x: 0.05,
+				  	},
+				  	yaxis: {
+							title: {
+					 			text: 'Коэффициент',
+					  		font: {
+									family: 'Courier New, monospace',
+									size: 18,
+									color: '#7f7f7f'
+					  		}
+							}
+				  	}
+					};
+
+					Plotly.newPlot(plot, data, layout);
+					//Plotly.newPlot(plotPoly, data2, layout);
+			}
+		}
+
+		function createFactorsTable(factors)
+		{
+			counter = 0
+
+			width = screen.width
+			dropdown = document.getElementById('dropdown')
+
+			ddItem = document.createElement('div')
+			ddItem.class = 'dropdown-item'
+
+			table = document.createElement('table')
+			tr    = document.createElement('tr')
+
+			for (i = 0 ; i < factors.length;i++)
+			{
+
+				if ( (factors[i][0] != 921)   && //Победа К1
+				     (factors[i][0] != 3150)  &&
+			       (factors[i][0] != 3144)  &&
+
+						 (factors[i][0] != 922)   && //Ничья
+						 (factors[i][0] != 3151)  &&
+						 (factors[i][0] != 3152)  &&
+
+						 (factors[i][0] != 923)   && //Победа К2
+				     (factors[i][0] != 3151)  &&
+				     (factors[i][0] != 3145)  &&
+
+						 (factors[i][0] != 924)   && //1X
+						 (factors[i][0] != 1571)  && //12
+						 (factors[i][0] != 925)   && //2X
+
+			       (factors[i][0] != 927)   && //Фора1
+				     (factors[i][0] != 937)   &&
+				     (factors[i][0] != 1845)  &&
+			             (factors[i][0] != 928)   && //Фора2
+				     (factors[i][0] != 938)   &&
+				     (factors[i][0] != 1846)  &&
+			             (factors[i][0] != 930)   && //Тотал Б
+				     (factors[i][0] != 940)   &&
+				     (factors[i][0] != 1848)  &&
+			             (factors[i][0] != 931)   && //Тотал М
+				     (factors[i][0] != 941)   &&
+				     (factors[i][0] != 1849)
+	                        ) continue;
+				td = document.createElement('td')
+				button = document.createElement('button')
+				button.className = "btn btn-primary"
+				button.type = "button"
+				button.style.width = 100
+				button.style.height = 70
+				button.innerText = evenstCode[factors[i][0]]// + ' ' + (parseFloat(factors[i][1]) / 100.0).toString()
+				button.setAttribute('factorID',  factors[i][0])
+				button.setAttribute('p',  factors[i][0])
+				button.setAttribute('onclick', 'getPlot()')
+				td.append(button)
+				tr.append(td)
+
+				counter = counter + 1
+
+				if(counter == 15)
+				{
+					table.append(tr)
+					tr    = document.createElement('tr')
+					counter = 0
+				}
+			}
+
+			table.append(tr)
+			dropdown.append(table)
+		}
+
+	</script>
+
+<body>
